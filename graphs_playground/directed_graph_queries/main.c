@@ -16,10 +16,10 @@ typedef struct slinked_list {
     node_t* tail;
 } slinked_list_t;
 
-typedef struct ordered_graph {
+typedef struct directed_graph {
     size_t num_vertices;
     slinked_list_t** adjacency_lists;
-} ordered_graph_t;
+} directed_graph_t;
 
 void create_slinked_list(slinked_list_t** list) {
     *list = (slinked_list_t*)malloc(sizeof(slinked_list_t));
@@ -64,8 +64,8 @@ void print_slinked_list(slinked_list_t* list) {
     printf("NULL\n");
 }
 
-void create_ordered_graph(ordered_graph_t** graph, const size_t num_vertices) {
-    *graph = (ordered_graph_t*)malloc(sizeof(ordered_graph_t));
+void create_directed_graph(directed_graph_t** graph, const size_t num_vertices) {
+    *graph = (directed_graph_t*)malloc(sizeof(directed_graph_t));
     (*graph)->num_vertices = num_vertices;
     (*graph)->adjacency_lists = (slinked_list_t**)malloc(num_vertices * sizeof(slinked_list_t*));
     for (size_t i = 0; i < num_vertices; i++) {
@@ -73,7 +73,7 @@ void create_ordered_graph(ordered_graph_t** graph, const size_t num_vertices) {
     }
 }
 
-void free_ordered_graph(ordered_graph_t* graph) {
+void free_directed_graph(directed_graph_t* graph) {
     for (size_t i = 0; i < graph->num_vertices; i++) {
         free_slinked_list(graph->adjacency_lists[i]);
         free(graph->adjacency_lists[i]);
@@ -82,7 +82,7 @@ void free_ordered_graph(ordered_graph_t* graph) {
     graph->num_vertices = 0;
 }
 
-void print_ordered_graph(ordered_graph_t* graph) {
+void print_directed_graph(directed_graph_t* graph) {
     const size_t graph_size = graph->num_vertices;
     printf("Ordered graph size: %llu\n", graph_size);
     for (size_t i = 0; i < graph_size; i++) {
@@ -90,7 +90,7 @@ void print_ordered_graph(ordered_graph_t* graph) {
     }
 }
 
-void read_ordered_graph_from_file(ordered_graph_t** graph, FILE* graph_file) {
+void read_directed_graph_from_file(directed_graph_t** graph, FILE* graph_file) {
     for (size_t i = 0; i < (*graph)->num_vertices; i++) {
         char vertex_buffer[64];
         fgets(vertex_buffer, 64, graph_file);
@@ -143,7 +143,7 @@ void read_ordered_graph_from_file(ordered_graph_t** graph, FILE* graph_file) {
     }
 }
 
-void process_query(ordered_graph_t* graph, FILE* query_file) {
+void process_query(directed_graph_t* graph, FILE* query_file) {
     char query_buffer[64];
     while (fgets(query_buffer, 64, query_file) != NULL) {
         size_t buffer_len = strlen(query_buffer);
@@ -211,19 +211,19 @@ int32_t main(int32_t argc, char** argv) {
     int32_t num_vertices = get_number_of_vertices(graph_file);
 
     // Create empty graph with given number of vertices
-    ordered_graph_t* graph = NULL;
-    create_ordered_graph(&graph, (size_t)num_vertices);
+    directed_graph_t* graph = NULL;
+    create_directed_graph(&graph, (size_t)num_vertices);
 
     // Read the graph from file
-    read_ordered_graph_from_file(&graph, graph_file);
+    read_directed_graph_from_file(&graph, graph_file);
     // Print the read graph
-    print_ordered_graph(graph);
+    print_directed_graph(graph);
 
     // Process queries
     process_query(graph, query_file);
 
     // Free graph memory
-    free_ordered_graph(graph);
+    free_directed_graph(graph);
     free(graph);
 
     // Close files
